@@ -101,19 +101,20 @@ window.addEventListener('DOMContentLoaded', function() {
         modalCloseBtn = document.querySelector('[data-close]');
 
     modalTrigger.forEach(btn => {
-        btn.addEventListener('click', function() {
-            modal.classList.add('show');
-            modal.classList.remove('hide');
-            // Either option with toggle - but then assign the class in the layout
-            document.body.style.overflow = 'hidden'; // prevent scrolling on the page when the modal is open
-        });
+        btn.addEventListener('click', openModal);
     });
 
     function closeModal() {
         modal.classList.add('hide');
         modal.classList.remove('show');
-        // Either option with toggle - but then assign the class in the layout
-        document.body.style.overflow = ''; // scrolling the page when the modal is closed
+        document.body.style.overflow = '';
+    }
+
+    function openModal() {
+        modal.classList.add('show');
+        modal.classList.remove('hide');
+        document.body.style.overflow = 'hidden';
+        clearInterval(modalTimerId);
     }
     
     modalCloseBtn.addEventListener('click', closeModal);
@@ -123,11 +124,20 @@ window.addEventListener('DOMContentLoaded', function() {
             closeModal();
         }
     });
-    
-    //closing the modal window by pressing the Escape key
+
     document.addEventListener('keydown', (e) => {
         if (e.code === "Escape" && modal.classList.contains('show')) { 
             closeModal();
         }
     });
+
+    const modalTimerId = setTimeout(openModal, 3000);
+
+    function showModalByScroll() {
+        if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
+            openModal();
+            window.removeEventListener('scroll', showModalByScroll);
+        }
+    }
+    window.addEventListener('scroll', showModalByScroll);
 });
